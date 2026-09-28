@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ComicCraft</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f4f8;
+            color: #222;
+        }
+
+        header {
+            background: #222;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .details {
+            line-height: 1.8;
+        }
+
+        .panel {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .panel h3 {
+            margin-top: 0;
+        }
+
+        .scene {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .image-prompt {
+            background: #f8f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .story {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .button {
+            display: block;
+            text-align: center;
+            margin: 25px auto;
+            width: 250px;
+            padding: 14px;
+            background: #222;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .button:hover {
+            background: #444;
+        }
+
+        .panel-image {
+            width: 100%;
+            max-width: 800px;
+            display: block;
+            margin: 15px auto;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<header>
+
+    <h1>🎨 ComicCraft</h1>
+
+    <p>AI Comic Story Creator</p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- COMIC INFORMATION -->
+
+    <div class="card">
+
+        <h2>{{ comic.title }}</h2>
+
+        <div class="details">
+
+            <strong>Theme:</strong>
+            {{ comic.theme }}
+            <br>
+
+            <strong>Main Character:</strong>
+            {{ comic.character }}
+            <br>
+
+            <strong>Setting:</strong>
+            {{ comic.setting }}
+            <br>
+
+            <strong>Tone:</strong>
+            {{ comic.tone }}
+            <br>
+
+            <strong>Art Style:</strong>
+            {{ comic.art_style }}
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- OUTLINE STAGE -->
+    <!-- ========================================= -->
+
+    {% if stage == "outline" %}
+
+    <div class="card">
+
+        <h2>📝 5-Panel Comic Outline</h2>
+
+        <p>
+            Your comic outline has been generated.
+            Review the five panels below and then
+            generate the complete story.
+        </p>
+
+    </div>
+
+
+    {% for panel in comic.panels %}
+
+    <div class="panel">
+
+        <h3>
+            Panel {{ panel.number }}:
+            {{ panel.title }}
+        </h3>
+
+        <div class="scene">
+
+            <strong>Scene:</strong>
+
+            <p>
+                {{ panel.scene }}
+            </p>
+
+        </div>
+
+
+        <div class="image-prompt">
+
+            <strong>Image Generation Prompt:</strong>
+
+            <p>
+                {{ panel.image_prompt }}
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+
+    <!-- GENERATE STORY FORM -->
+
+    <form method="post"
+          action="/generate-story">
+
+        <input type="hidden"
+               name="outline_json"
+               value="{{ outline_json }}">
+
+        <input type="hidden"
+               name="title"
+               value="{{ comic.title }}">
+
+        <input type="hidden"
+               name="theme"
+               value="{{ comic.theme }}">
+
+        <input type="hidden"
+               name="character"
+               value="{{ comic.character }}">
+
+        <input type="hidden"
+               name="setting"
+               value="{{ comic.setting }}">
+
+        <input type="hidden"
+               name="tone"
+               value="{{ comic.tone }}">
+
+        <input type="hidden"
+               name="art_style"
+               value="{{ comic.art_style }}">
+
+
+        <button type="submit"
+                class="button">
+
+            📖 Generate Story
+
+        </button>
+
+    </form>
+
+
+    {% endif %}
+
+
+
+    <!-- ========================================= -->
+    <!-- FINAL STORY STAGE -->
+    <!-- ========================================= -->
+
+    {% if stage == "final" %}
+
+    <div class="card">
+
+        <h2>📖 Full Comic Story</h2>
+
+        <div class="story">
+
+            {{ story }}
+
+        </div>
+
+    </div>
+
+
+    <h2>🎨 Comic Panels</h2>
+
+
+    {% for panel in comic.panels %}
+
+    <div class="panel">
+
+        <h3>
+            Panel {{ panel.number }}:
+            {{ panel.title }}
+        </h3>
+
+
+        {% if panel.image %}
+
+        <img src="{{ panel.image }}"
+             alt="Comic Panel {{ panel.number }}"
+             class="panel-image">
+
+        {% endif %}
+
+
+        <div class="scene">
+
+            <strong>Scene:</strong>
+
+            <p>
+                {{ panel.scene }}
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+
+    {% if comic.pdf %}
+
+    <a href="{{ comic.pdf }}"
+       class="button"
+       download>
+
+        📄 Download Comic PDF
+
+    </a>
+
+    {% endif %}
+
+
+    {% endif %}
+
+
+    <!-- CREATE ANOTHER -->
+
+    <a href="/"
+       class="button">
+
+        🔄 Create Another Comic
+
+    </a>
+
+
+</div>
+
+
+<footer>
+
+    ComicCraft | AI-Powered Comic Story Creator
+
+</footer>
+
+
+</body>
+
+</html>
